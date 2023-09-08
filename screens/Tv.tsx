@@ -1,27 +1,27 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import booksService from "../services/books.service";
+import tvShowsService from "../services/tv.service";
 import FilteringForm from "./Form";
 
-const Books = () => {
+const TvShows = () => {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchBooks() {
+    async function fetchTvShows() {
       try {
-        const result = await booksService.getAllBooks("");
+        const result = await tvShowsService.getAllTvShows("");
         setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
 
-    fetchBooks();
+    fetchTvShows();
   }, []);
 
-  const filterBooks = async (filterText: string) => {
+  const filterTvShows = async (filterText: string) => {
     try {
-      const result = await booksService.getAllBooks(filterText);
+      const result = await tvShowsService.getAllTvShows(filterText);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -30,10 +30,9 @@ const Books = () => {
 
   const renderItem = ({ item }: any) => {
     return (
-      <View style={{ ...styles.container, backgroundColor: item.reader.color }}>
+      <View style={{ ...styles.container, backgroundColor: item.viewer.color }}>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.item}>{item.author}</Text>
-        <Text style={styles.item}>{item.reader.username}</Text>
+        <Text style={styles.item}>{item.viewer.username}</Text>
         <Text style={styles.item}>{item.rating}</Text>
         <Text style={styles.item}>
           {item.start_date} - {item.finish_date}
@@ -44,7 +43,7 @@ const Books = () => {
 
   return (
     <View style={styles.container}>
-      <FilteringForm onFilter={filterBooks} />
+      <FilteringForm onFilter={filterTvShows} />
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -74,4 +73,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Books;
+export default TvShows;

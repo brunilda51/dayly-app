@@ -1,27 +1,27 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import booksService from "../services/books.service";
+import moviesService from "../services/movies.service";
 import FilteringForm from "./Form";
 
-const Books = () => {
+const Movies = () => {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchBooks() {
+    async function fetchMovies() {
       try {
-        const result = await booksService.getAllBooks("");
+        const result = await moviesService.getAllMovies("");
         setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
 
-    fetchBooks();
+    fetchMovies();
   }, []);
 
-  const filterBooks = async (filterText: string) => {
+  const filterMovies = async (filterText: string) => {
     try {
-      const result = await booksService.getAllBooks(filterText);
+      const result = await moviesService.getAllMovies(filterText);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -30,21 +30,18 @@ const Books = () => {
 
   const renderItem = ({ item }: any) => {
     return (
-      <View style={{ ...styles.container, backgroundColor: item.reader.color }}>
+      <View style={{ ...styles.container, backgroundColor: item.viewer.color }}>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.item}>{item.author}</Text>
-        <Text style={styles.item}>{item.reader.username}</Text>
+        <Text style={styles.item}>{item.viewer.username}</Text>
         <Text style={styles.item}>{item.rating}</Text>
-        <Text style={styles.item}>
-          {item.start_date} - {item.finish_date}
-        </Text>
+        <Text style={styles.item}>{item.watch_date}</Text>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <FilteringForm onFilter={filterBooks} />
+      <FilteringForm onFilter={filterMovies} />
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -74,4 +71,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Books;
+export default Movies;

@@ -1,39 +1,65 @@
-import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet } from "react-native";
+import usersServices from "../services/users.service";
+import { Text } from "react-native";
+import { Button } from "react-native-elements";
+import { FontAwesome5 } from "@expo/vector-icons/";
+import { Dropdown } from "react-native-element-dropdown";
 
 export default function FilteringForm({ onFilter }: any) {
-  const [filterText, setFilterText] = useState("");
-  const [filterOption, setFilterOption] = useState("");
-  const [open, setOpen] = useState(false);
+  const [isFocus, setIsFocus] = useState(false);
   const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
-    { label: "William", value: "apple" },
-    { label: "Hannah", value: "banana" },
-  ]);
+  const [items, setItems] = useState<any>([]);
 
   const handleFilter = () => {
     // Perform filtering logic based on filterText and filterOption
     // Pass the filtered results to the parent component using the onFilter prop
-    onFilter(filterText, filterOption);
+    onFilter(value);
   };
-
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const result = await usersServices.getAllUsers();
+        const users = result.map((a: any) => {
+          return { label: a.username, value: a.username };
+        });
+        setItems(users);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchUsers();
+  }, []);
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter filter text"
-        value={filterText}
-        onChangeText={setFilterText}
-      />
-      <DropDownPicker
-        style={styles.input}
-        open={open}
+      <Dropdown
+        style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+        iconStyle={styles.iconStyle}
+        data={items}
+        search
+        maxHeight={300}
+        labelField="label"
+        valueField="value"
+        placeholder={!isFocus ? "Select item" : "..."}
+        searchPlaceholder="Search..."
         value={value}
-        items={items}
-        setOpen={setOpen}
-        setValue={setValue}
-        setItems={setItems}
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
+        onChange={(item: any) => {
+          setValue(item.value);
+          setIsFocus(false);
+        }}
+        renderLeftIcon={() => (
+          <FontAwesome5
+            color={isFocus ? "lightblue" : "black"}
+            style={styles.icon}
+            name="user-graduate"
+            size={20}
+          />
+        )}
       />
       <Button title="Filter" onPress={handleFilter} />
     </View>
@@ -42,12 +68,46 @@ export default function FilteringForm({ onFilter }: any) {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    backgroundColor: "white",
+    padding: 16,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 0.5,
+    borderRadius: 8,
+    marginBottom: 20,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  label: {
+    position: "absolute",
+    backgroundColor: "white",
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
   input: {
     width: "100%",
+    zIndex: 2,
     marginBottom: 8,
     borderWidth: 1,
     borderColor: "gray",
