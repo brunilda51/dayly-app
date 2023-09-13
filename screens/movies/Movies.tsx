@@ -1,27 +1,27 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import tvShowsService from "../services/tv.service";
-import FilteringForm from "./Form";
+import moviesService from "../../services/movies.service";
+import FilteringForm from "../FilterForm";
 
-const TvShows = () => {
+const Movies = () => {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchTvShows() {
+    async function fetchMovies() {
       try {
-        const result = await tvShowsService.getAllTvShows("");
+        const result = await moviesService.getAllMovies("");
         setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
 
-    fetchTvShows();
+    fetchMovies();
   }, []);
 
-  const filterTvShows = async (filterText: string) => {
+  const filterMovies = async (filterText: string) => {
     try {
-      const result = await tvShowsService.getAllTvShows(filterText);
+      const result = await moviesService.getAllMovies(filterText);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -34,16 +34,14 @@ const TvShows = () => {
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.item}>{item.viewer.username}</Text>
         <Text style={styles.item}>{item.rating}</Text>
-        <Text style={styles.item}>
-          {item.start_date} - {item.finish_date}
-        </Text>
+        <Text style={styles.item}>{item.watch_date}</Text>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <FilteringForm onFilter={filterTvShows} />
+      <FilteringForm onFilter={filterMovies} />
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -56,11 +54,11 @@ const TvShows = () => {
 
 const styles = StyleSheet.create({
   container: {
-    color: "#fff",
-    display: "flex",
-    flex: 1,
     margin: 5,
+    backgroundColor: "#fff",
     padding: 10,
+    borderRadius: 20,
+    elevation: 2,
   },
   item: {
     width: "100%",
@@ -73,4 +71,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TvShows;
+export default Movies;

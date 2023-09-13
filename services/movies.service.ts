@@ -8,7 +8,6 @@ const URL = API_URL + "/movie";
 const getAllMovies = async (viewer: string) => {
   try {
     let query = viewer ? "?viewer=" + viewer : "";
-    console.log(URL + "/filter" + query);
     const response = await axios.get(URL + "/filter" + query);
     return response.data.movies;
   } catch (error) {

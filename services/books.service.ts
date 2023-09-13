@@ -25,7 +25,18 @@ const getBookStats = async () => {
     throw error;
   }
 };
+
+const addBook = async (bookForm: any) => {
+  try {
+    const response = await axios.post(URL, bookForm);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching books:", error);
+    throw error;
+  }
+};
 export default {
   getAllBooks,
   getBookStats,
+  addBook,
 };

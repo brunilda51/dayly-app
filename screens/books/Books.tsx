@@ -1,27 +1,28 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import moviesService from "../services/movies.service";
-import FilteringForm from "./Form";
+import booksService from "../../services/books.service";
+import FilteringForm from "../FilterForm";
+import { formatDate, getFormattedDate } from "../../util/date";
 
-const Movies = () => {
+const Books = () => {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchMovies() {
+    async function fetchBooks() {
       try {
-        const result = await moviesService.getAllMovies("");
+        const result = await booksService.getAllBooks("");
         setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
 
-    fetchMovies();
+    fetchBooks();
   }, []);
 
-  const filterMovies = async (filterText: string) => {
+  const filterBooks = async (filterText: string) => {
     try {
-      const result = await moviesService.getAllMovies(filterText);
+      const result = await booksService.getAllBooks(filterText);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -30,18 +31,21 @@ const Movies = () => {
 
   const renderItem = ({ item }: any) => {
     return (
-      <View style={{ ...styles.container, backgroundColor: item.viewer.color }}>
+      <View style={{ ...styles.container, backgroundColor: item.reader.color }}>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.item}>{item.viewer.username}</Text>
+        <Text style={styles.item}>{item.author}</Text>
+        <Text style={styles.item}>{item.reader.username}</Text>
         <Text style={styles.item}>{item.rating}</Text>
-        <Text style={styles.item}>{item.watch_date}</Text>
+        <Text style={styles.item}>
+          {formatDate(item.start_date)} - {formatDate(item.finish_date)}
+        </Text>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <FilteringForm onFilter={filterMovies} />
+      <FilteringForm onFilter={filterBooks} />
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -71,4 +75,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Movies;
+export default Books;

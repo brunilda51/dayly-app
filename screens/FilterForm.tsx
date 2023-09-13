@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import usersServices from "../services/users.service";
-import { Text } from "react-native";
 import { Button } from "react-native-elements";
 import { FontAwesome5 } from "@expo/vector-icons/";
 import { Dropdown } from "react-native-element-dropdown";
@@ -61,7 +60,11 @@ export default function FilteringForm({ onFilter }: any) {
           />
         )}
       />
-      <Button title="Filter" onPress={handleFilter} />
+      <Button
+        title="Filter"
+        onPress={handleFilter}
+        style={{ backgroundColor: "#00a6a6" }}
+      />
     </View>
   );
 }
