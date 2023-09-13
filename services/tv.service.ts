@@ -25,7 +25,18 @@ const getTvShowStats = async () => {
     throw error;
   }
 };
+
+const addTv = async (tvForm: any) => {
+  try {
+    const response = await axios.post(URL);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching movies:", error);
+    throw error;
+  }
+};
 export default {
   getAllTvShows,
   getTvShowStats,
+  addTv,
 };

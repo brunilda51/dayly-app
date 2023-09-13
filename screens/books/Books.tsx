@@ -37,7 +37,7 @@ const Books = () => {
         <Text style={styles.item}>{item.reader.username}</Text>
         <Text style={styles.item}>{item.rating}</Text>
         <Text style={styles.item}>
-          {formatDate(item.start_date)} - {formatDate(item.finish_date)}
+          {item.start_date} - {item.finish_date}
         </Text>
       </View>
     );
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 5,
     padding: 10,
+    borderRadius: 20,
   },
   item: {
     width: "100%",

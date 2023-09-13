@@ -19,8 +19,9 @@ export default function FilteringForm({ onFilter }: any) {
     async function fetchUsers() {
       try {
         const result = await usersServices.getAllUsers();
-        const users = result.map((a: any) => {
-          return { label: a.username, value: a.username };
+        let users = [{ label: "All", value: "" }];
+        result.map((a: any) => {
+          users.push({ label: a.username, value: a.username });
         });
         setItems(users);
       } catch (error) {

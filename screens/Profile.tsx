@@ -36,7 +36,7 @@ const Profile = () => {
       <View style={styles.main}>
         <ModalComponent element={<BookForm />} text={"Add Book"} />
         <ModalComponent element={<MovieForm />} text={"Add Movie"} />
-        <ModalComponent element={<TvForm />} text={"Add TvShow"} />
+        <ModalComponent element={<TvForm />} text={"Add Tv Show"} />
       </View>
     </SafeAreaProvider>
   );
@@ -54,6 +54,9 @@ const styles = StyleSheet.create({
   },
   main: {
     display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 20,
   },
   heading: {
     color: "white",

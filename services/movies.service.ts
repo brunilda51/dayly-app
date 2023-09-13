@@ -25,7 +25,18 @@ const getMovieStats = async () => {
     throw error;
   }
 };
+
+const addMovie = async (movieForm: any) => {
+  try {
+    const response = await axios.post(URL);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching movies:", error);
+    throw error;
+  }
+};
 export default {
   getAllMovies,
   getMovieStats,
+  addMovie,
 };

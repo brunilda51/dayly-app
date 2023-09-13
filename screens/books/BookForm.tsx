@@ -7,6 +7,7 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import { getFormattedDate } from "../../util/date";
 import { useSelector } from "react-redux";
+import { GlobalStyles } from "../styles";
 
 const BookForm = ({ defaultValues, toggleModal }: any) => {
   const userId = useSelector((state: any) => state.user.id);
@@ -183,14 +184,16 @@ const styles = StyleSheet.create({
     display: "flex",
     backgroundColor: "#fff",
     alignContent: "center",
+    paddingVertical: 20,
     paddingHorizontal: 50,
     borderRadius: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "white",
+    color: GlobalStyles.colors.primary100,
     textAlign: "center",
+    marginVertical: 20,
   },
   inputsRow: {
     flexDirection: "row",
