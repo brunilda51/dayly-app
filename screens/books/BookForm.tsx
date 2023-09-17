@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { Text, StyleSheet, View } from "react-native";
+import moment from "moment";
 import { ScrollView } from "react-native-gesture-handler";
-
 import booksService from "../../services/books.service";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-import { getFormattedDate } from "../../util/date";
 import { useSelector } from "react-redux";
 import { GlobalStyles } from "../styles";
 
-const BookForm = ({ defaultValues, toggleModal }: any) => {
+const BookForm = ({ defaultValues, toggleModal, refresh }: any) => {
   const userId = useSelector((state: any) => state.user.id);
   const [inputs, setInputs] = useState({
     title: {
@@ -25,18 +24,21 @@ const BookForm = ({ defaultValues, toggleModal }: any) => {
       isValid: true,
     },
     start_date: {
-      value: defaultValues ? getFormattedDate(defaultValues.start_date) : "",
+      value: defaultValues ? defaultValues.start_date : "",
       isValid: true,
     },
     finish_date: {
-      value: defaultValues ? getFormattedDate(defaultValues.finish_date) : "",
+      value: defaultValues ? defaultValues.finish_date : "",
       isValid: true,
     },
   });
 
   const submitBookForm = (form: any) => {
     form.reader = userId;
-    booksService.addBook(form);
+    defaultValues
+      ? booksService.updateBook(form, defaultValues._id)
+      : booksService.addBook(form);
+    refresh ? refresh() : null;
     toggleModal();
   };
   const inputChangedHandler = (inputIdentifier: any, enteredValue: any) => {
@@ -57,10 +59,16 @@ const BookForm = ({ defaultValues, toggleModal }: any) => {
       finish_date: inputs.finish_date.value,
     };
 
-    const startDateIsValid =
-      new Date(bookData.start_date).toString() !== "Invalid Date";
-    const finishDateIsValid =
-      new Date(bookData.finish_date).toString() !== "Invalid Date";
+    const formatString = "YYYY-MM-DD";
+    console.log(moment(bookData.start_date, formatString), bookData);
+    const startDateIsValid = moment(
+      bookData.start_date,
+      formatString
+    ).isValid();
+    const finishDateIsValid = moment(
+      bookData.finish_date,
+      formatString
+    ).isValid();
     const titleIsValid = bookData.title?.length > 0;
     const authorIsValid = bookData.author?.length > 0;
     const ratingIsValid = bookData.rating?.length > 0;
@@ -181,9 +189,7 @@ export default BookForm;
 
 const styles = StyleSheet.create({
   form: {
-    display: "flex",
     backgroundColor: "#fff",
-    alignContent: "center",
     paddingVertical: 20,
     paddingHorizontal: 50,
     borderRadius: 20,

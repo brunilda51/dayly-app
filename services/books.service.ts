@@ -35,8 +35,29 @@ const addBook = async (bookForm: any) => {
     throw error;
   }
 };
+const updateBook = async (bookForm: any, userId: string) => {
+  try {
+    const response = await axios.put(URL + "/" + userId, bookForm);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching books:", error);
+    throw error;
+  }
+};
+
+const deleteBook = async (bookId: string) => {
+  try {
+    const response = await axios.delete(URL + "/" + bookId);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching books:", error);
+    throw error;
+  }
+};
 export default {
   getAllBooks,
   getBookStats,
   addBook,
+  updateBook,
+  deleteBook,
 };

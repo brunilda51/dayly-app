@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Alert, Modal, StyleSheet, Text, Pressable, View } from "react-native";
-const ModalComponent = ({ element, text }: any) => {
+const ModalComponent = ({ element, text, color }: any) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
@@ -24,7 +24,7 @@ const ModalComponent = ({ element, text }: any) => {
         </View>
       </Modal>
       <Pressable
-        style={[styles.button, styles.buttonOpen]}
+        style={[styles.button, { backgroundColor: color }]}
         onPress={() => setModalVisible(true)}
       >
         <Text style={styles.textStyle}>{text}</Text>
@@ -35,23 +35,15 @@ const ModalComponent = ({ element, text }: any) => {
 
 const styles = StyleSheet.create({
   centeredView: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 5,
+    justifyContent: "center", //Centered vertically
+    alignItems: "center", //Centered horizontally
+    flex: 1,
   },
-  modalView: {
-    margin: 20,
-    borderRadius: 20,
-    alignItems: "center",
-  },
+  modalView: {},
   button: {
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
   },
   buttonClose: {
     backgroundColor: "#2196F3",

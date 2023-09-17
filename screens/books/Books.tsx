@@ -2,21 +2,25 @@ import { View, Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import booksService from "../../services/books.service";
 import FilteringForm from "../FilterForm";
-import { formatDate, getFormattedDate } from "../../util/date";
+import { Icon } from "@rneui/themed";
+import { useSelector } from "react-redux";
+import ModalComponent from "../Modal";
+import BookForm from "./BookForm";
+import DeleteConfirmation from "../DeleteConfirmation";
 
 const Books = () => {
+  const userId = useSelector((state: any) => state.user.id);
   const [data, setData] = useState<any[]>([]);
+  async function fetchBooks() {
+    try {
+      const result = await booksService.getAllBooks("");
+      setData(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
 
   useEffect(() => {
-    async function fetchBooks() {
-      try {
-        const result = await booksService.getAllBooks("");
-        setData(result);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
     fetchBooks();
   }, []);
 
@@ -24,6 +28,15 @@ const Books = () => {
     try {
       const result = await booksService.getAllBooks(filterText);
       setData(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const deleteBook = async (bookId: string) => {
+    try {
+      const result = await booksService.deleteBook(bookId);
+      await fetchBooks();
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -39,6 +52,35 @@ const Books = () => {
         <Text style={styles.item}>
           {item.start_date} - {item.finish_date}
         </Text>
+        {item.reader._id === userId ? (
+          <View style={styles.buttons}>
+            <ModalComponent
+              element={<BookForm defaultValues={item} refresh={fetchBooks} />}
+              color={"white"}
+              text={
+                <Icon
+                  name="edit"
+                  color={item.reader.color}
+                  style={styles.button}
+                />
+              }
+            />
+
+            <ModalComponent
+              element={
+                <DeleteConfirmation itemId={item._id} deleteItem={deleteBook} />
+              }
+              color={"white"}
+              text={
+                <Icon
+                  name="delete"
+                  color={item.reader.color}
+                  style={styles.button}
+                />
+              }
+            />
+          </View>
+        ) : null}
       </View>
     );
   };
@@ -73,6 +115,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#fff",
     fontWeight: "bold",
+  },
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 20,
+  },
+  button: {
+    minWidth: 50,
   },
 });
 
