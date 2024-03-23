@@ -5,10 +5,10 @@ import { API_URL } from "./urlHelper";
 
 const URL = API_URL + "/books";
 
-const getAllBooks = async (reader: string) => {
+const getAllBooks = async (reader: string, page: number) => {
   try {
     let query = reader ? "?reader=" + reader : "";
-    const response = await axios.get(URL + "/filter" + query);
+    const response = await axios.get(URL + "/filter/" + page + query);
     return response.data.books;
   } catch (error) {
     console.error("Error fetching books:", error);
@@ -19,6 +19,7 @@ const getAllBooks = async (reader: string) => {
 const getBookStats = async () => {
   try {
     const response = await axios.get(URL + "/stats");
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching books:", error);

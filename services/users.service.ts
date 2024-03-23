@@ -7,6 +7,7 @@ const URL = API_URL + "/users";
 const getAllUsers = async () => {
   try {
     const response = await axios.get(URL);
+    console.log(response.data);
     return response.data.users;
   } catch (error) {
     console.error("Error fetching books:", error);

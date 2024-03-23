@@ -1,8 +1,37 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { GlobalStyles } from "../styles";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectTheme } from "../../redux/themeSlice";
 
 function Button({ children, onPress, mode, style }: any) {
+  const theme = useSelector(selectTheme);
+
+  const styles = StyleSheet.create({
+    button: {
+      borderRadius: 10,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      backgroundColor: theme.colors.hunter,
+      marginTop: 20,
+    },
+    flat: {
+      backgroundColor: "transparent",
+    },
+    buttonText: {
+      color: "white",
+      textAlign: "center",
+    },
+    flatText: {
+      color: "black",
+    },
+    pressed: {
+      opacity: 0.75,
+      color: "white !important",
+      backgroundColor: theme.colors.fern,
+      borderRadius: 8,
+    },
+  });
   return (
     <View style={style}>
       <Pressable onPress={onPress}>
@@ -10,6 +39,7 @@ function Button({ children, onPress, mode, style }: any) {
           <View
             style={[
               styles.button,
+              style,
               mode === "flat" && styles.flat,
               pressed && styles.pressed,
             ]}
@@ -18,7 +48,7 @@ function Button({ children, onPress, mode, style }: any) {
               style={[
                 styles.buttonText,
                 mode === "flat" && {
-                  color: pressed ? "white" : GlobalStyles.colors.primary100,
+                  color: pressed ? "white" : theme.colors.fern,
                 },
               ]}
             >
@@ -32,27 +62,3 @@ function Button({ children, onPress, mode, style }: any) {
 }
 
 export default Button;
-
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: 4,
-    padding: 8,
-    backgroundColor: GlobalStyles.colors.primary100,
-  },
-  flat: {
-    backgroundColor: "transparent",
-  },
-  buttonText: {
-    color: "white",
-    textAlign: "center",
-  },
-  flatText: {
-    color: GlobalStyles.colors.primary100,
-  },
-  pressed: {
-    opacity: 0.75,
-    color: "white !important",
-    backgroundColor: GlobalStyles.colors.primary100,
-    borderRadius: 4,
-  },
-});

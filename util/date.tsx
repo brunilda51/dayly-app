@@ -1,3 +1,4 @@
+import moment from "moment";
 export function getFormattedDate(date: any) {
   return date.toISOString().slice(0, 10);
 }
@@ -18,4 +19,11 @@ export const formatDate = (inputDate: string) => {
   const formattedDate = `${year}-${month}-${day}`;
 
   return formattedDate;
+};
+
+export const isDateValid = (dateString: string) => {
+  const formatString = "DD.MM.YYYY";
+  const dateObject = moment(dateString, formatString, true); // The 'true' argument enables strict parsing
+
+  return dateObject.isValid();
 };

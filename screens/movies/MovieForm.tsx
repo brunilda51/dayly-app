@@ -2,15 +2,13 @@ import React, { useState } from "react";
 import { Text, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
 import { ScrollView } from "react-native-gesture-handler";
-
 import moviesService from "../../services/movies.service";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-import { getFormattedDate } from "../../util/date";
-
+import { isDateValid } from "../../util/date";
 import { GlobalStyles } from "../styles";
 
-const MovieForm = ({ defaultValues, toggleModal }: any) => {
+const MovieForm = ({ defaultValues, toggleModal, refresh }: any) => {
   const userId = useSelector((state: any) => state.user.id);
   const [inputs, setInputs] = useState({
     title: {
@@ -22,16 +20,20 @@ const MovieForm = ({ defaultValues, toggleModal }: any) => {
       isValid: true,
     },
     watch_date: {
-      value: defaultValues ? getFormattedDate(defaultValues.start_date) : "",
+      value: defaultValues ? defaultValues.watch_date : "",
       isValid: true,
     },
   });
 
   const submitMovieForm = (form: any) => {
     form.reader = userId;
-    moviesService.addMovie(form);
+    defaultValues
+      ? moviesService.updateMovie(form, defaultValues._id)
+      : moviesService.addMovie(form);
+    refresh ? refresh() : null;
     toggleModal();
   };
+
   const inputChangedHandler = (inputIdentifier: any, enteredValue: any) => {
     setInputs((curInputs) => {
       return {
@@ -45,16 +47,14 @@ const MovieForm = ({ defaultValues, toggleModal }: any) => {
     const movieData: any = {
       title: inputs.title.value,
       rating: inputs.rating.value,
-      start_date: inputs.watch_date.value,
+      watch_date: inputs.watch_date.value,
     };
 
-    const watchDateIsValid =
-      new Date(movieData.watch_date).toString() !== "Invalid Date";
+    const watchDateIsValid = isDateValid(movieData.watch_date);
     const titleIsValid = movieData.title?.length > 0;
     const ratingIsValid = movieData.rating?.length > 0;
 
     if (!titleIsValid || !ratingIsValid || !watchDateIsValid) {
-      // Alert.alert('Invalid input', 'Please check your input values');
       setInputs((curInputs) => {
         return {
           title: { value: curInputs.title.value, isValid: titleIsValid },
@@ -106,7 +106,7 @@ const MovieForm = ({ defaultValues, toggleModal }: any) => {
           textInputConfig={{
             placeholder: "YYYY-MM-DD",
             maxLength: 10,
-            onChangeText: inputChangedHandler.bind(this, "start_date"),
+            onChangeText: inputChangedHandler.bind(this, "watch_date"),
             value: inputs.watch_date.value,
           }}
         />

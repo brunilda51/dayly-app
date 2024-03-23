@@ -11,14 +11,21 @@ import DeleteConfirmation from "../DeleteConfirmation";
 const Books = () => {
   const userId = useSelector((state: any) => state.user.id);
   const [data, setData] = useState<any[]>([]);
+  const [page, setPage] = useState<any>(0);
   async function fetchBooks() {
     try {
-      const result = await booksService.getAllBooks("");
+      const result = await booksService.getAllBooks("", page);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   }
+
+  const loadMoreData = () => {
+    let newPage = page + 1;
+    setPage(newPage);
+    fetchBooks();
+  };
 
   useEffect(() => {
     fetchBooks();
@@ -26,7 +33,7 @@ const Books = () => {
 
   const filterBooks = async (filterText: string) => {
     try {
-      const result = await booksService.getAllBooks(filterText);
+      const result = await booksService.getAllBooks(filterText, page);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -90,7 +97,10 @@ const Books = () => {
       <FilteringForm onFilter={filterBooks} />
       <FlatList
         data={data}
+        initialNumToRender={7}
         renderItem={renderItem}
+        onEndReachedThreshold={0.2}
+        onEndReached={loadMoreData}
         keyExtractor={(item, index) => index.toString()}
         numColumns={1}
       />

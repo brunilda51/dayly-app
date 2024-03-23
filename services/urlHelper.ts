@@ -1,3 +1,2 @@
-export const API_URL = "http://10.41.225.41:3000/api";
-//
-//export const API_URL = "http://192.168.0.27:3000/api";
+export const API_URL =
+  "http://trust-balancer-1606046615.eu-west-3.elb.amazonaws.com/api";

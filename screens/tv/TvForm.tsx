@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { Text, StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-
 import tvsService from "../../services/tv.service";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-import { getFormattedDate } from "../../util/date";
 import { useSelector } from "react-redux";
 import { GlobalStyles } from "../styles";
+import { isDateValid } from "../../util/date";
 
-const TvForm = ({ defaultValues, toggleModal }: any) => {
+const TvForm = ({ defaultValues, toggleModal, refresh }: any) => {
   const userId = useSelector((state: any) => state.user.id);
   const [inputs, setInputs] = useState({
     title: {
@@ -21,20 +20,24 @@ const TvForm = ({ defaultValues, toggleModal }: any) => {
       isValid: true,
     },
     start_date: {
-      value: defaultValues ? getFormattedDate(defaultValues.start_date) : "",
+      value: defaultValues ? defaultValues.start_date : "",
       isValid: true,
     },
     finish_date: {
-      value: defaultValues ? getFormattedDate(defaultValues.finish_date) : "",
+      value: defaultValues ? defaultValues.finish_date : "",
       isValid: true,
     },
   });
 
   const submitTvForm = (form: any) => {
     form.reader = userId;
-    tvsService.addTv(form);
+    defaultValues
+      ? tvsService.updateTv(form, defaultValues._id)
+      : tvsService.addTv(form);
+    refresh ? refresh() : null;
     toggleModal();
   };
+
   const inputChangedHandler = (inputIdentifier: any, enteredValue: any) => {
     setInputs((curInputs) => {
       return {
@@ -52,22 +55,18 @@ const TvForm = ({ defaultValues, toggleModal }: any) => {
       finish_date: inputs.finish_date.value,
     };
 
-    const startDateIsValid =
-      new Date(tvData.start_date).toString() !== "Invalid Date";
-    const finishDateIsValid =
-      new Date(tvData.finish_date).toString() !== "Invalid Date";
+    const startDateIsValid = isDateValid(tvData.start_date);
+    const finishDateIsValid = isDateValid(tvData.finish_date);
+
     const titleIsValid = tvData.title?.length > 0;
-    const authorIsValid = tvData.author?.length > 0;
     const ratingIsValid = tvData.rating?.length > 0;
 
     if (
       !titleIsValid ||
-      !authorIsValid ||
       !ratingIsValid ||
       !startDateIsValid ||
       !finishDateIsValid
     ) {
-      // Alert.alert('Invalid input', 'Please check your input values');
       setInputs((curInputs) => {
         return {
           title: { value: curInputs.title.value, isValid: titleIsValid },

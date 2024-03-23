@@ -28,7 +28,28 @@ const getTvShowStats = async () => {
 
 const addTv = async (tvForm: any) => {
   try {
-    const response = await axios.post(URL);
+    const response = await axios.post(URL, tvForm);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching movies:", error);
+    throw error;
+  }
+};
+
+const updateTv = async (tvForm: any, tvId: string) => {
+  try {
+    console.log(tvForm);
+    const response = await axios.put(URL + "/" + tvId, tvForm);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching movies:", error);
+    throw error;
+  }
+};
+
+const deleteTv = async (tvId: string) => {
+  try {
+    const response = await axios.delete(URL + "/" + tvId);
     return response.data;
   } catch (error) {
     console.error("Error fetching movies:", error);
@@ -39,4 +60,6 @@ export default {
   getAllTvShows,
   getTvShowStats,
   addTv,
+  updateTv,
+  deleteTv,
 };
