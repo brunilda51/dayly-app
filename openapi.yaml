@@ -12,7 +12,7 @@ paths:
       tags:
         - Auth
       summary: User login
-      operationId: loginUser
+      operationId: auth/loginUser
       requestBody:
         required: true
         content:
@@ -43,7 +43,7 @@ paths:
       tags:
         - Auth
       summary: User sign up
-      operationId: signUpUser
+      operationId: auth/signUpUser
       requestBody:
         required: true
         content:
@@ -73,7 +73,7 @@ paths:
       tags:
         - Auth
       summary: Forgot password
-      operationId: forgotPassword
+      operationId: auth/forgotPassword
       requestBody:
         required: true
         content:
@@ -99,7 +99,7 @@ paths:
       tags:
         - Auth
       summary: Reset password
-      operationId: resetPassword
+      operationId: auth/resetPassword
       parameters:
         - in: query
           name: token
@@ -132,7 +132,7 @@ paths:
       tags:
         - Auth
       summary: User logout
-      operationId: logoutUser
+      operationId: auth/logoutUser
       responses:
         "200":
           description: OK
