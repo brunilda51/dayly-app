@@ -1,0 +1,650 @@
+openapi: 3.0.0
+info:
+  title: My API
+  description: |
+    This is the OpenAPI specification for My API.
+  version: 1.0.0
+servers:
+  - url: http://trust-balancer-1606046615.eu-west-3.elb.amazonaws.com
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: User login
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token for authentication
+        "401":
+          description: Unauthorized
+
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: User sign up
+      operationId: signUpUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Forgot password
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /auth/reset-password:
+    post:
+      tags:
+        - Auth
+      summary: Reset password
+      operationId: resetPassword
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+          description: JWT token received via email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: User logout
+      operationId: logoutUser
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /books:
+    get:
+      tags:
+        - Books
+      summary: Get all books
+      operationId: getAllBooks
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+    post:
+      tags:
+        - Books
+      summary: Create a new book
+      operationId: addBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+
+  /books/stats:
+    get:
+      tags:
+        - Books
+      summary: Get book statistics
+      operationId: getBookStats
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object # You may need to define the schema for book stats
+
+  /books/filter/{page}:
+    get:
+      tags:
+        - Books
+      summary: Get filtered books
+      operationId: getFilteredBooks
+      parameters:
+        - in: path
+          name: page
+          schema:
+            type: integer
+          required: true
+          description: Page number
+        - in: query
+          name: reader
+          schema:
+            type: string
+          required: false
+          description: Filter books by reader username
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+
+  /books/{id}:
+    put:
+      tags:
+        - Books
+      summary: Update a book
+      operationId: updateBook
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the book to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+    delete:
+      tags:
+        - Books
+      summary: Delete a book
+      operationId: deleteBook
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the book to delete
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+
+  /tv:
+    get:
+      tags:
+        - TVShows
+      summary: Get all TV shows
+      operationId: getAllTvShows
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TVShow"
+    post:
+      tags:
+        - TVShows
+      summary: Create a new TV show
+      operationId: addTvShow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TVShowInput"
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+
+  /tv/stats:
+    get:
+      tags:
+        - TVShows
+      summary: Get TV show statistics
+      operationId: getTvStats
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object # You may need to define the schema for TV show stats
+
+  /tv/filter:
+    get:
+      tags:
+        - TVShows
+      summary: Get filtered TV shows
+      operationId: getFilteredTvShows
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TVShow"
+
+  /tv/{id}:
+    put:
+      tags:
+        - TVShows
+      summary: Update a TV show
+      operationId: updateTvShow
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the TV show to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TVShowInput"
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+    delete:
+      tags:
+        - TVShows
+      summary: Delete a TV show
+      operationId: deleteTvShow
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the TV show to delete
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+
+  /movies:
+    get:
+      tags:
+        - Movie
+      summary: Get all movies
+      operationId: getAllMovies
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Movie"
+    post:
+      tags:
+        - Movie
+      summary: Create a new movie
+      operationId: addMovie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MovieInput"
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+
+  /movies/stats:
+    get:
+      tags:
+        - Movie
+      summary: Get movie statistics
+      operationId: getMovieStats
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object # You may need to define the schema for movie stats
+
+  /movies/filter:
+    get:
+      tags:
+        - Movie
+      summary: Get filtered movies
+      operationId: getFilteredMovies
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Movie"
+
+  /movies/{id}:
+    put:
+      tags:
+        - Movie
+      summary: Update a movie
+      operationId: updateMovie
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the movie to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MovieInput"
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+    delete:
+      tags:
+        - Movie
+      summary: Delete a movie
+      operationId: deleteMovie
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the movie to delete
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  items:
+                    $ref: "#/components/schemas/User"
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              items:
+                $ref: "#/components/schemas/UserInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/User"
+
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        start_date:
+          type: string
+          format: date
+        finish_date:
+          type: string
+          format: date
+        rating:
+          type: string
+    BookInput:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        start_date:
+          type: string
+          format: date
+        finish_date:
+          type: string
+          format: date
+        rating:
+          type: string
+    Movie:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        director:
+          type: string
+        watch_date:
+          type: string
+          format: date
+        rating:
+          type: string
+        viewer:
+          type: string # Assuming viewer is represented by their ID
+    MovieInput:
+      type: object
+      properties:
+        title:
+          type: string
+        director:
+          type: string
+        watch_date:
+          type: string
+          format: date
+        rating:
+          type: string
+        viewer:
+          type: string # Assuming viewer is represented by their ID
+    TVShow:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        start_date:
+          type: string
+          format: date
+        finish_date:
+          type: string
+          format: date
+        rating:
+          type: string
+        viewer:
+          type: string # Assuming viewer is represented by their ID
+    TVShowInput:
+      type: object
+      properties:
+        title:
+          type: string
+        start_date:
+          type: string
+          format: date
+        finish_date:
+          type: string
+          format: date
+        rating:
+          type: string
+        viewer:
+          type: string # Assuming viewer is represented by their ID
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        profilePicture:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastLoginAt:
+          type: string
+          format: date-time
+    UserInput:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        profilePicture:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastLoginAt:
+          type: string
+          format: date-time
