@@ -1,27 +1,27 @@
-import { Controller, useForm } from "react-hook-form";
-import { toggleTheme } from "../../redux/themeSlice";
-import {
-  Alert,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { useForm } from "react-hook-form";
+import { Alert, SafeAreaView, StyleSheet, Text } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { object, string, TypeOf } from "zod";
 import FormInput from "../ui/FormInput";
 import { useSelector } from "react-redux";
 import { selectTheme } from "../../redux/themeSlice";
 import Button from "../ui/Button";
 
-const formSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  full_name: z.string().min(3, "Full name must be at least 3 characters"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+const formSchema = object({
+  email: string().email("Please enter a valid email"),
+  password: string()
+    .min(1, "Password is required")
+    .min(8, "Password must be more than 8 characters")
+    .max(32, "Password must be less than 32 characters"),
+  passwordConfirm: string().min(1, "Please confirm your password"),
+}).refine((data) => data.password === data.passwordConfirm, {
+  path: ["passwordConfirm"],
+  message: "Passwords do not match",
 });
 
 const SignUpForm = () => {
+  const theme = useSelector(selectTheme);
+
   const { control, handleSubmit } = useForm({
     defaultValues: {
       email: "",
@@ -30,8 +30,6 @@ const SignUpForm = () => {
     },
     resolver: zodResolver(formSchema),
   });
-
-  const theme = useSelector(selectTheme);
 
   const onSubmit = (data: any) => {
     Alert.alert("Successful", JSON.stringify(data));
@@ -59,7 +57,6 @@ const SignUpForm = () => {
     <SafeAreaView style={[styles.container]}>
       <Text style={styles.header}>SIGN UP</Text>
       <FormInput control={control} name={"email"} placeholder="email" />
-
       <FormInput
         control={control}
         name={"password"}
@@ -68,8 +65,9 @@ const SignUpForm = () => {
       />
       <FormInput
         control={control}
-        name={"repeat"}
+        name={"passwordConfirm"}
         placeholder="repeat password"
+        secureTextEntry
       />
       <Button onPress={handleSubmit(onSubmit)}>REGISTER</Button>
     </SafeAreaView>
