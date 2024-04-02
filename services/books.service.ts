@@ -19,7 +19,6 @@ const getAllBooks = async (reader: string, page: number) => {
 const getBookStats = async () => {
   try {
     const response = await axios.get(URL + "/stats");
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching books:", error);

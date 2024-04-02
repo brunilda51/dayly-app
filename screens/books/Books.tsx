@@ -39,7 +39,6 @@ const Books = () => {
   };
 
   const renderItem = ({ item }: any) => {
-    console.log(item);
     return (
       <View style={{ ...styles.container, backgroundColor: item.reader.color }}>
         <Text style={styles.title}>{item.title}</Text>

@@ -27,9 +27,7 @@ const Stats = () => {
     isLoading: isLoadingTvShows,
   }: any = useGetTvShowStatsQuery();
 
-  useEffect(() => {
-    console.log("Movies", tvStats);
-  }, [movieStats, bookStats, tvStats]);
+  useEffect(() => {}, [movieStats, bookStats, tvStats]);
   const allListsPopulated = bookStats && movieStats && tvStats;
   return (
     <SafeAreaProvider>

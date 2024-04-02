@@ -16,6 +16,3 @@ export const store = configureStore({
 });
 
 const endpoints = emptySplitApi.endpoints;
-
-// Print out the available endpoints
-console.log("Available Endpoints:", endpoints);

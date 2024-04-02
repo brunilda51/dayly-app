@@ -38,7 +38,6 @@ const addTv = async (tvForm: any) => {
 
 const updateTv = async (tvForm: any, tvId: string) => {
   try {
-    console.log(tvForm);
     const response = await axios.put(URL + "/" + tvId, tvForm);
     return response.data;
   } catch (error) {

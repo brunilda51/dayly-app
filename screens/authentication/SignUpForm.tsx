@@ -43,7 +43,6 @@ const SignUpForm = () => {
     } catch (error) {
       console.error("Error:", error);
     }
-    console.log(data, error);
   };
   const styles = StyleSheet.create({
     container: {
