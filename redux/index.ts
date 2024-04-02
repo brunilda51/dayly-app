@@ -1,13 +1,21 @@
 // store.js
 import { configureStore } from "@reduxjs/toolkit";
 import themeReducer from "./themeSlice";
+import { emptySplitApi } from "./emptyApi";
+import authReducer from "./authSlice"; // Import as default export
 
 export const store = configureStore({
   reducer: {
     theme: themeReducer,
+    [emptySplitApi.reducerPath]: emptySplitApi.reducer,
+    auth: authReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({}).concat([]),
+
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(emptySplitApi.middleware),
 });
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+
+const endpoints = emptySplitApi.endpoints;
+
+// Print out the available endpoints
+console.log("Available Endpoints:", endpoints);

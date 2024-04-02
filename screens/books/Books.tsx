@@ -1,55 +1,45 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import booksService from "../../services/books.service";
+import {
+  useGetAllBooksQuery,
+  useDeleteBookMutation,
+  useGetFilteredBooksQuery,
+} from "../../redux/booksApi";
 import FilteringForm from "../FilterForm";
 import { Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
 import ModalComponent from "../Modal";
 import BookForm from "./BookForm";
 import DeleteConfirmation from "../DeleteConfirmation";
 
 const Books = () => {
-  const userId = useSelector((state: any) => state.user.id);
-  const [data, setData] = useState<any[]>([]);
-  const [page, setPage] = useState<any>(0);
-  async function fetchBooks() {
-    try {
-      const result = await booksService.getAllBooks("", page);
-      setData(result);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }
+  // Fetch books data from the API
+
+  const [page, setPage] = useState(1);
+  const { data, isFetching, refetch }: any = useGetFilteredBooksQuery({
+    page: page,
+  });
 
   const loadMoreData = () => {
-    let newPage = page + 1;
-    setPage(newPage);
-    fetchBooks();
+    setPage((prevPage) => prevPage + 1);
   };
 
   useEffect(() => {
-    fetchBooks();
-  }, []);
+    refetch();
+  }, [page]);
 
-  const filterBooks = async (filterText: string) => {
-    try {
-      const result = await booksService.getAllBooks(filterText, page);
-      setData(result);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const deleteBookMutation = useDeleteBookMutation();
 
   const deleteBook = async (bookId: string) => {
     try {
-      const result = await booksService.deleteBook(bookId);
-      await fetchBooks();
+      // await deleteBookMutation.mutateAsync({ id: bookId });
+      await refetch();
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error deleting book:", error);
     }
   };
 
   const renderItem = ({ item }: any) => {
+    console.log(item);
     return (
       <View style={{ ...styles.container, backgroundColor: item.reader.color }}>
         <Text style={styles.title}>{item.title}</Text>
@@ -59,50 +49,49 @@ const Books = () => {
         <Text style={styles.item}>
           {item.start_date} - {item.finish_date}
         </Text>
-        {item.reader._id === userId ? (
-          <View style={styles.buttons}>
-            <ModalComponent
-              element={<BookForm defaultValues={item} refresh={fetchBooks} />}
-              color={"white"}
-              text={
-                <Icon
-                  name="edit"
-                  color={item.reader.color}
-                  style={styles.button}
-                />
-              }
-            />
+        <View style={styles.buttons}>
+          <ModalComponent
+            element={<BookForm defaultValues={item} refresh={refetch} />}
+            color={"white"}
+            text={
+              <Icon
+                name="edit"
+                color={item.reader.color}
+                style={styles.button}
+              />
+            }
+          />
 
-            <ModalComponent
-              element={
-                <DeleteConfirmation itemId={item._id} deleteItem={deleteBook} />
-              }
-              color={"white"}
-              text={
-                <Icon
-                  name="delete"
-                  color={item.reader.color}
-                  style={styles.button}
-                />
-              }
-            />
-          </View>
-        ) : null}
+          <ModalComponent
+            element={
+              <DeleteConfirmation itemId={item._id} deleteItem={deleteBook} />
+            }
+            color={"white"}
+            text={
+              <Icon
+                name="delete"
+                color={item.reader.color}
+                style={styles.button}
+              />
+            }
+          />
+        </View>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <FilteringForm onFilter={filterBooks} />
+      <FilteringForm onFilter={(filterText: string) => setPage(0)} />
       <FlatList
-        data={data}
-        initialNumToRender={7}
+        data={data?.books}
         renderItem={renderItem}
         onEndReachedThreshold={0.2}
         onEndReached={loadMoreData}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item: any, index) => item._id.toString()}
         numColumns={1}
+        refreshing={isFetching}
+        onRefresh={refetch}
       />
     </View>
   );

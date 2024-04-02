@@ -3,11 +3,11 @@ import { Alert, SafeAreaView, StyleSheet, Text } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string, TypeOf } from "zod";
 import FormInput from "../ui/FormInput";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectTheme } from "../../redux/themeSlice";
 import Button from "../ui/Button";
 import { usePostAuthLoginMutation } from "../../redux/authApi";
-import { useGetAllBooksQuery } from "../../redux/booksApi";
+import { setToken } from "../../redux/authSlice";
 
 const formSchema = object({
   email: string().email("Please enter a valid email"),
@@ -15,35 +15,31 @@ const formSchema = object({
     .min(1, "Password is required")
     .min(8, "Password must be more than 8 characters")
     .max(32, "Password must be less than 32 characters"),
-  passwordConfirm: string().min(1, "Please confirm your password"),
-}).refine((data) => data.password === data.passwordConfirm, {
-  path: ["passwordConfirm"],
-  message: "Passwords do not match",
 });
 
-const SignUpForm = () => {
+const SignInForm = () => {
   const theme = useSelector(selectTheme);
   const [postAuthLogin] = usePostAuthLoginMutation();
-  const { data, error, isLoading } = useGetAllBooksQuery();
 
+  const dispatch = useDispatch();
   const { control, handleSubmit } = useForm({
     defaultValues: {
       email: "",
       password: "",
-      repeat: "",
     },
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (form: any) => {
+  const onSubmit = async (form: any) => {
     try {
-      postAuthLogin({
+      const data: any = await postAuthLogin({
         body: form,
-      });
+      }).unwrap();
+      dispatch(setToken(data.result.token));
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Login failed:", error);
+      throw error;
     }
-    console.log(data, error);
   };
   const styles = StyleSheet.create({
     container: {
@@ -66,7 +62,7 @@ const SignUpForm = () => {
 
   return (
     <SafeAreaView style={[styles.container]}>
-      <Text style={styles.header}>SIGN UP</Text>
+      <Text style={styles.header}>SIGN IN</Text>
       <FormInput control={control} name={"email"} placeholder="email" />
       <FormInput
         control={control}
@@ -74,15 +70,9 @@ const SignUpForm = () => {
         placeholder="password"
         secureTextEntry
       />
-      <FormInput
-        control={control}
-        name={"passwordConfirm"}
-        placeholder="repeat password"
-        secureTextEntry
-      />
-      <Button onPress={handleSubmit(onSubmit)}>REGISTER</Button>
+      <Button onPress={handleSubmit(onSubmit)}>LOG IN</Button>
     </SafeAreaView>
   );
 };
 
-export default SignUpForm;
+export default SignInForm;

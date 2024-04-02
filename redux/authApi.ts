@@ -11,16 +11,6 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.body,
       }),
     }),
-    postAuthSignup: build.mutation<
-      PostAuthSignupApiResponse,
-      PostAuthSignupApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/auth/signup`,
-        method: "POST",
-        body: queryArg.body,
-      }),
-    }),
     postAuthForgotPassword: build.mutation<
       PostAuthForgotPasswordApiResponse,
       PostAuthForgotPasswordApiArg
@@ -58,16 +48,6 @@ export type PostAuthLoginApiResponse = /** status 200 OK */ {
 };
 export type PostAuthLoginApiArg = {
   body: {
-    username?: string;
-    password?: string;
-  };
-};
-export type PostAuthSignupApiResponse = /** status 200 OK */ {
-  message?: string;
-};
-export type PostAuthSignupApiArg = {
-  body: {
-    username?: string;
     email?: string;
     password?: string;
   };
@@ -96,7 +76,6 @@ export type PostAuthLogoutApiResponse = /** status 200 OK */ {
 export type PostAuthLogoutApiArg = void;
 export const {
   usePostAuthLoginMutation,
-  usePostAuthSignupMutation,
   usePostAuthForgotPasswordMutation,
   usePostAuthResetPasswordMutation,
   usePostAuthLogoutMutation,

@@ -1,10 +1,13 @@
 import { emptySplitApi as api } from "./emptyApi";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+    getAllUsers: build.query<GetAllUsersApiResponse, GetAllUsersApiArg>({
       query: () => ({ url: `/users` }),
     }),
-    postUsers: build.mutation<PostUsersApiResponse, PostUsersApiArg>({
+    createNewUser: build.mutation<
+      CreateNewUserApiResponse,
+      CreateNewUserApiArg
+    >({
       query: (queryArg) => ({
         url: `/users`,
         method: "POST",
@@ -15,10 +18,10 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false,
 });
 export { injectedRtkApi as enhancedApi };
-export type GetUsersApiResponse = /** status 200 OK */ User[][];
-export type GetUsersApiArg = void;
-export type PostUsersApiResponse = /** status 200 OK */ User[];
-export type PostUsersApiArg = {
+export type GetAllUsersApiResponse = /** status 200 OK */ User[][];
+export type GetAllUsersApiArg = void;
+export type CreateNewUserApiResponse = /** status 200 OK */ User[];
+export type CreateNewUserApiArg = {
   body: UserInput[];
 };
 export type User = {
@@ -35,11 +38,6 @@ export type User = {
 export type UserInput = {
   username?: string;
   email?: string;
-  date_of_birth?: string;
-  profilePicture?: string;
-  role?: string;
-  status?: string;
-  createdAt?: string;
-  lastLoginAt?: string;
+  password?: string;
 };
-export const { useGetUsersQuery, usePostUsersMutation } = injectedRtkApi;
+export const { useGetAllUsersQuery, useCreateNewUserMutation } = injectedRtkApi;

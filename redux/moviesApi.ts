@@ -12,7 +12,7 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getMovieStats: build.query<GetMovieStatsApiResponse, GetMovieStatsApiArg>({
-      query: () => ({ url: `/movies/stats` }),
+      query: () => ({ url: `/movie/stats` }),
     }),
     getFilteredMovies: build.query<
       GetFilteredMoviesApiResponse,
